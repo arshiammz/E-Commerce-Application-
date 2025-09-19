@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
+const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 
 
@@ -36,7 +37,8 @@ router.post('/', async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json(newUser);
+    const token = jwt.sign({_id: newUser._id, name: newUser.name}, "jwtSecuritykey")
+    res.status(201).json(token);
 });
 
 module.exports = router;
