@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const User = require('../models/users');
 
 
@@ -11,10 +12,13 @@ router.post('/', async (req, res) => {
         res.status(400).json({message: "user already exits."})
     }
 
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({
         name: name,
         email: email,
-        password: password,
+        password: hashedPassword,
         deliveryAddress: deliveryAddress
     });
 
