@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
     });
 
     await newUser.save();
-    const token = jwt.sign({_id: newUser._id, name: newUser.name}, "jwtSecuritykey",{expiresIn: "1d"})
+    const token = jwt.sign({_id: newUser._id, name: newUser.name}, process.env.JWT_KEY,{expiresIn: "1d"})
     res.status(201).json(token);
 });
 
