@@ -12,6 +12,7 @@ mongoose.connect("mongodb://localhost:27017/cartwish")
 .catch((err) => console.log("MongoDB Connection Failed!", err));
 
 app.use(express.json());
+app.use("/images/category", express.static("upload?category"));
 
 app.use('/user', userRoutes);
 app.use('/category', categoryRoutes);
