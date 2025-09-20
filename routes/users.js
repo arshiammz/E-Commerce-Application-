@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
+const authMiddleware = require('../middleware/auth')
 
 
 const createUserSchema = Joi.object({
@@ -59,6 +60,13 @@ router.post('/login', async (req, res) => {
     const token =generateToken({_id: user._id, name: user.name});
     res.json(token);
 });
+
+router.get('/', authMiddleware, async(req, res) => {
+    const user = req.user;
+    const userData = await User.findById(req.user._id).select("-password")
+    res.json(userData);
+});
+
 
 const generateToken = (data) => {
     return jwt.sign(data, process.env.JWT_KEY, {expiresIn: "1d"});
