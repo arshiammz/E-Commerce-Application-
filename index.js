@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const userRoutes = require('./routes/users');
+const categoryRoutes = require('./routes/category');
 
 mongoose.connect("mongodb://localhost:27017/cartwish")
 .then(() => console.log("MongoDB Connected Successfully!!"))
@@ -13,6 +14,7 @@ mongoose.connect("mongodb://localhost:27017/cartwish")
 app.use(express.json());
 
 app.use('/user', userRoutes);
+app.use('/category', categoryRoutes);
 
 
 
