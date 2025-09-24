@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const multer = require('multer');
 const Category = require('../models/category');
+const checkRole = require("../middleware/checkRole");
+const authMiddleware = require("../middleware/auth");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -31,7 +33,7 @@ const upload = multer({
     }
 });
 
-router.post("/", upload.single("icon"), async (req, res) => {
+router.post("/",authMiddleware,checkRole('admin') ,upload.single("icon"), async (req, res) => {
     if (!req.body.name || !req.file) {
         return res.status(400).json({message: "Name and icon are rquired!"});
     }
