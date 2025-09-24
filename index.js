@@ -14,6 +14,7 @@ mongoose.connect("mongodb://localhost:27017/cartwish")
 
 app.use(express.json());
 app.use("/images/category", express.static("upload?category"));
+app.use("upload/products", express.static("upload/products"));
 
 app.use('/user', userRoutes);
 app.use('/category', categoryRoutes);

@@ -63,6 +63,8 @@ router.get('/', async (req, res) => {
     const perPage = parseInt(req.query.perPage) || 8;
 
     const QueryCategory = req.query.category || null;
+    const querySearch = req.query.search || null;
+
 
     let query = {}
 
@@ -74,6 +76,10 @@ router.get('/', async (req, res) => {
         }
 
         query.category = category._id;
+    }
+
+    if (querySearch) {
+        query.title = { $regex: querySearch, $options: "i"}
     }
 
     const products = await Product.find(query).select("-_id -seller -__v").skip((page - 1) * perPage ).limit(perPage);
