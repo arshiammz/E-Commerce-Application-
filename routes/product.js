@@ -58,8 +58,20 @@ router.post('/',authMiddleware, checkRole('seller'),upload.array("images", 8) , 
 });
 
 router.get('/', async (req, res) => {
-    const products = await Product.find().select("-_id -seller -__v");
-    res.json(products);
+    const page = parseInt(req.query.page);
+    const perPage = parseInt(req.query.perPage) || 8;
+
+    const products = await Product.find().select("-_id -seller -__v").skip((page - 1) * perPage ).limit(perPage);
+
+    const totalProducts = await Product.countDocuments()
+    const totalPages = Math.ceil(totalProducts / perPage);
+    res.json({
+        products: products,
+        totalProducts,
+        totalPages,
+        currentPage: page,
+        postPerPage: perPage
+    });
 });
 
 
