@@ -4,6 +4,7 @@ const authMiddleware = require('../middleware/auth');
 const checkSeller = require('../middleware/checkSeller');
 const checkRole = require('../middleware/checkRole');
 const Product = require('../models/product');
+const Category = require('../models/category');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -61,7 +62,21 @@ router.get('/', async (req, res) => {
     const page = parseInt(req.query.page);
     const perPage = parseInt(req.query.perPage) || 8;
 
-    const products = await Product.find().select("-_id -seller -__v").skip((page - 1) * perPage ).limit(perPage);
+    const QueryCategory = req.query.category || null;
+
+    let query = {}
+
+    if(QueryCategory){
+        const category = await Category.findOne({name: QueryCategory})
+        
+        if (!category) {
+            return res.status(404).json({message: "Category not found!"})
+        }
+
+        query.category = category._id;
+    }
+
+    const products = await Product.find(query).select("-_id -seller -__v").skip((page - 1) * perPage ).limit(perPage);
 
     const totalProducts = await Product.countDocuments()
     const totalPages = Math.ceil(totalProducts / perPage);
