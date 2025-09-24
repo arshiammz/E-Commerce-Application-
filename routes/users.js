@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
     });
 
     await newUser.save();
-    const token = generateToken({_id: newUser._id, name: newUser.name});
+    const token = generateToken({_id: newUser._id, name: newUser.name, role: newUser.role});
     res.status(201).json(token);
 });
 
@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
     }
 
     // create jwt and send the response
-    const token =generateToken({_id: user._id, name: user.name});
+    const token =generateToken({_id: user._id, name: user.name, role: user.role});
     res.json(token);
 });
 
