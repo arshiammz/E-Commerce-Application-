@@ -57,5 +57,10 @@ router.post('/',authMiddleware, checkRole('seller'),upload.array("images", 8) , 
 
 });
 
+router.get('/', async (req, res) => {
+    const products = await Product.find().select("-_id -seller -__v");
+    res.json(products);
+});
+
 
 module.exports = router;
