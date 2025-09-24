@@ -3,6 +3,7 @@ const multer = require('multer');
 const authMiddleware = require('../middleware/auth');
 const checkSeller = require('../middleware/checkSeller');
 const checkRole = require('../middleware/checkRole');
+const Product = require('../models/product');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -34,7 +35,26 @@ const upload = multer({
 });
 
 router.post('/',authMiddleware, checkRole('seller'),upload.array("images", 8) , async (req, res) => {
-    res.send("seller is here")
+    const {title, description, category, price, stock} = req.body;
+
+    const images = req.files.map((image) => image.filename);
+    if (images.length === 0){
+        return res.status(400).json({message: "at least one image s required!"})
+    }
+
+    const newProduct = new Product({
+        title,
+        description,
+        category,
+        price,
+        stock,
+        images,
+        seller: req.user._id,
+    });
+
+    await newProduct.save();
+    res.status(201).json(newProduct);
+
 });
 
 
