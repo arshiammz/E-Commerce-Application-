@@ -8,6 +8,7 @@ const authMiddleware = require('../middleware/auth');
 const checkRole = require('../middleware/checkRole');
 const Product = require('../models/product');
 const Category = require('../models/category');
+const { title } = require('process');
 
 const router = express.Router();
 
@@ -142,6 +143,12 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/suggestion', async (req, res) => {
+    const search = req.query.search;
+    const products = await product.find({title: {$regex: search, $options: "i"} }).select("_id title").limit(10);
+    res.json(products);
+});
+
 // Get single product
 router.get('/:id', async (req, res) => {
   try {
@@ -207,5 +214,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     return res.status(500).json({ message: 'Server error deleting product.' });
   }
 });
+
 
 module.exports = router;
