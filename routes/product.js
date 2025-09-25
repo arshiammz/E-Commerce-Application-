@@ -1,5 +1,7 @@
 const express = require('express');
 const multer = require('multer');
+const fs = require('fs/promises');
+const path = require('path');
 const authMiddleware = require('../middleware/auth');
 const checkSeller = require('../middleware/checkSeller');
 const checkRole = require('../middleware/checkRole');
@@ -108,7 +110,40 @@ router.get('/:id', async (req, res) => {
     }
 
     res.json(product);
+});
+
+router.delete("/:id", authMiddleware, async (req, res) => {
+    const productID = req.params.id;
+
+    const product = await Product.findById(productID).select("seller");
+    
+    if (!product){
+        return res.status(404).json({message: "Product not found"})
+    }
+    
+    if ( req.user.role === "admin" || String(req.user._id) === String(product.seller)) {
+        await product.deleteOne();
+
+        if (product.images && product.images.length > 0){
+            product.images.forEach(async (imageName) => {
+                const fullPath = path.join(__dirname,"../upload/products", imageName);
+                
+                try{
+                    await fs.unlink(fullPath)
+                } catch (error){
+                    console.error(`error deleting file: ${fullPath}`, error);
+                }
+
+            });
+            return res.json({message: "product deleted successfuly"});
+        }
+    }
+
+    return res.status(403).json({message: "Access denied: Only admin or seller can delete this product!"})
+
 })
+
+
 
 
 module.exports = router;
