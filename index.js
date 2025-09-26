@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { default: mongoose } = require('mongoose');
 const winston = require('winston')
+require('winston-mongodb')
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -16,6 +17,10 @@ const logger = winston.createLogger({
         new winston.transports.Console({level: "debug"}),
         new winston.transports.File({
             filename:"logs/errors.log",
+            level: "error"
+        }),
+        new winston.transports.MongoDB({
+            db: "mongodb://localhost:27017/cartwish",
             level: "error"
         })
     ]
