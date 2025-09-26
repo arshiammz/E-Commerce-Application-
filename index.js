@@ -20,6 +20,11 @@ app.use('/user', userRoutes);
 app.use('/category', categoryRoutes);
 app.use('/products',productRoutes);
 
+app.use((error, req, res, next) => {
+    console.log("Error Middleware is running")
+    console.log(error);
+    return res.status(500).json({message: "Intenal Server Error!"});
+});
 
 
 app.listen(PORT, () => { console.log(`Server is running on port ${PORT}`)});
