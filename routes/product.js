@@ -143,15 +143,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/suggestion', async (req, res, next) => {
-    try {    
+router.get('/suggestion', async (req, res, next) => {    
     const search = req.query.search;
     const products = await product.find({title: {$regex: search, $options: "i"} }).select("_id title").limit(10);
     res.json(products);
-    } catch (error) {
-      next(error);
-    }
-
 });
 
 // Get single product
