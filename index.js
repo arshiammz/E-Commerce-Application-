@@ -26,18 +26,32 @@ const logger = winston.createLogger({
     ]
 });
 
-// process.on("uncaughtException", (err) => {
-//     logger.error("uncaughtExeption!", err);
-//     logger.on("finish",() => {
-//         process.exit(1);
-//     });
-//     logger.end(); 
-// })
+process.on("uncaughtException", (err) => {
+    logger.error("uncaughtExeption!", err);
+    logger.on("finish",() => {
+        process.exit(1);
+    });
+    logger.end(); 
+})
+
+process.on("unhandledRejection", (err) => {
+    logger.error("unhandle promise Rejection", err);
+    logger.on("finish",() => {
+        process.exit(1);
+    });
+    logger.end(); 
+})
 
 
 mongoose.connect("mongodb://localhost:27017/cartwish")
 .then(() => console.log("MongoDB Connected Successfully!!"))
-.catch((err) => console.log("MongoDB Connection Failed!", err));
+.catch((err) => {
+    logger.error("MongoDB Connection Failed!", err)
+    logger.on("finish",() => {
+        process.exit(1);
+    });
+    logger.end(); 
+});
 
 app.use(express.json());
 app.use("/images/category", express.static("upload?category"));
