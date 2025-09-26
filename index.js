@@ -1,12 +1,25 @@
 require('dotenv').config();
 const express = require('express');
 const { default: mongoose } = require('mongoose');
+const winston = require('winston')
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const userRoutes = require('./routes/users');
 const categoryRoutes = require('./routes/category');
 const productRoutes = require('./routes/product');
+
+const logger = winston.createLogger({
+    level: "info",
+    format: winston.format.combine(winston.format.timestamp(),winston.format.json()),
+    transports: [
+        new winston.transports.Console({level: "debug"}),
+        new winston.transports.File({
+            filename:"logs/errors.log",
+            level: "error"
+        })
+    ]
+});
 
 mongoose.connect("mongodb://localhost:27017/cartwish")
 .then(() => console.log("MongoDB Connected Successfully!!"))
@@ -22,9 +35,13 @@ app.use('/products',productRoutes);
 
 app.use((error, req, res, next) => {
     console.log("Error Middleware is running")
-    console.log(error);
+    logger.error(error.message, {
+        method: req.method,
+        path: req.originalUrl,
+        stack: error.stack
+    });
     return res.status(500).json({message: "Intenal Server Error!"});
 });
 
 
-app.listen(PORT, () => { console.log(`Server is running on port ${PORT}`)});
+app.listen(PORT, () => { logger.info(`Server is running on port ${PORT}`)});
