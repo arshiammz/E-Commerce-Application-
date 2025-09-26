@@ -26,6 +26,15 @@ const logger = winston.createLogger({
     ]
 });
 
+// process.on("uncaughtException", (err) => {
+//     logger.error("uncaughtExeption!", err);
+//     logger.on("finish",() => {
+//         process.exit(1);
+//     });
+//     logger.end(); 
+// })
+
+
 mongoose.connect("mongodb://localhost:27017/cartwish")
 .then(() => console.log("MongoDB Connected Successfully!!"))
 .catch((err) => console.log("MongoDB Connection Failed!", err));
