@@ -144,9 +144,15 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/suggestion', async (req, res) => {
+    try {    
     const search = req.query.search;
     const products = await product.find({title: {$regex: search, $options: "i"} }).select("_id title").limit(10);
     res.json(products);
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({message: "Internal Server error!"}); 
+    }
+
 });
 
 // Get single product
